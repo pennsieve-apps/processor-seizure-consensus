@@ -1,0 +1,12 @@
+# Runtime dependencies, resolved on python:3.12.15-slim (linux/amd64).
+# pandas/numpy read and write the tables; timescoring (esl-epfl, MIT) scores the detected
+# seizure onset as an event (SzCORE); awslambdaric serves the Lambda runtime.
+numpy==2.5.4
+pandas==3.1.0
+python-dateutil==3.0.0
+six==1.17.0
+tzdata==2026.6
+timescoring==0.0.7
+awslambdaric==4.2.3
+simplejson==4.2.0
+snapshot-restore-py==1.0.0

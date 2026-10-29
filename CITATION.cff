@@ -1,0 +1,198 @@
+cff-version: "1.2.0"
+message: If you use this app, please cite it and the works it builds on, listed under references.
+type: software
+title: Seizure Onset Consensus
+abstract: Fuses the channel rankings of seizure-onset localisation methods (DynaSD channel recruitment,
+  Epileptogenicity Index, neural fragility) into one seizure-onset-zone estimate per SEEG/ECoG recording,
+  and scores every method and the consensus against expert onset labels (AUC, precision/recall/F1,
+  SzCORE event scoring of the detected onset).
+authors:
+- name: Pennsieve (University of Pennsylvania)
+repository-code: https://github.com/pennsieve-apps/processor-seizure-consensus
+license: Apache-2.0
+keywords:
+- ieeg
+- seeg
+- electrophysiology
+- epilepsy
+- seizure-onset
+- consensus
+- statistics
+references:
+- type: article
+  title: 'SzCORE: Seizure Community Open-Source Research Evaluation framework for the validation of electroencephalography-based
+    automated seizure detection algorithms'
+  authors:
+  - family-names: Dan
+    given-names: Jonathan
+  - family-names: Pale
+    given-names: Una
+  - family-names: Amirshahi
+    given-names: Alireza
+  - family-names: Cappelletti
+    given-names: William
+  - family-names: Ingolfsson
+    given-names: Thorir Mar
+  - family-names: Wang
+    given-names: Xiaying
+  - family-names: Cossettini
+    given-names: Andrea
+  - family-names: Bernini
+    given-names: Adriano
+  - family-names: Benini
+    given-names: Luca
+  - family-names: Beniczky
+    given-names: Sándor
+  - family-names: Atienza
+    given-names: David
+  - family-names: Ryvlin
+    given-names: Philippe
+  year: 2024
+  journal: Epilepsia
+  volume: 66
+  issue: S3
+  start: '14'
+  end: '24'
+  doi: 10.1111/epi.18113
+- type: software
+  title: 'timescoring: Library for measuring performance of time series classification'
+  authors:
+  - family-names: Dan
+    given-names: Jonathan
+  - family-names: Pale
+    given-names: Una
+  version: 0.0.7
+  license: MIT
+  repository-code: https://github.com/esl-epfl/timescoring
+  url: https://pypi.org/project/timescoring/
+- type: article
+  title: Neural fragility as an EEG marker of the seizure onset zone
+  authors:
+  - family-names: Li
+    given-names: Adam
+  - family-names: Huynh
+    given-names: Chester
+  - family-names: Fitzgerald
+    given-names: Zachary
+  - family-names: Cajigas
+    given-names: Iahn
+  - family-names: Brusko
+    given-names: Damian
+  - family-names: Jagid
+    given-names: Jonathan
+  - family-names: Claudio
+    given-names: Angel O.
+  - family-names: Kanner
+    given-names: Andres M.
+  - family-names: Hopp
+    given-names: Jennifer
+  - family-names: Chen
+    given-names: Stephanie
+  - family-names: Haagensen
+    given-names: Jennifer
+  - family-names: Johnson
+    given-names: Emily
+  - family-names: Anderson
+    given-names: William
+  - family-names: Crone
+    given-names: Nathan
+  - family-names: Inati
+    given-names: Sara
+  - family-names: Zaghloul
+    given-names: Kareem A.
+  - family-names: Bulacio
+    given-names: Juan
+  - family-names: Gonzalez-Martinez
+    given-names: Jorge
+  - family-names: Sarma
+    given-names: Sridevi V.
+  year: 2021
+  journal: Nature Neuroscience
+  volume: 24
+  issue: '10'
+  start: '1465'
+  end: '1474'
+  doi: 10.1038/s41593-021-00901-w
+- type: article
+  title: 'Epileptogenicity of brain structures in human temporal lobe epilepsy: a quantified study from intracerebral EEG'
+  authors:
+  - family-names: Bartolomei
+    given-names: Fabrice
+  - family-names: Chauvel
+    given-names: Patrick
+  - family-names: Wendling
+    given-names: Fabrice
+  year: 2008
+  journal: Brain
+  volume: 131
+  issue: '7'
+  start: '1818'
+  end: '1830'
+  doi: 10.1093/brain/awn111
+- type: article
+  title: Unsupervised seizure annotation and detection with neural dynamic divergence
+  authors:
+  - family-names: Ojemann
+    given-names: William K.S.
+  - family-names: Xu
+    given-names: Zhongchuan
+  - family-names: Shi
+    given-names: Haoer
+  - family-names: Walsh
+    given-names: Katie
+  - family-names: Pattnaik
+    given-names: Akash
+  - family-names: Sinha
+    given-names: Nishant
+  - family-names: Lavelle
+    given-names: Sarah
+  - family-names: Aguila
+    given-names: Carlos
+  - family-names: Gallagher
+    given-names: Ryan
+  - family-names: Revell
+    given-names: Andrew
+  - family-names: LaRocque
+    given-names: Joshua J.
+  - family-names: Korzun
+    given-names: Jacob
+  - family-names: Kulick-Soper
+    given-names: Catherine V.
+  - family-names: Zhou
+    given-names: Daniel J.
+  - family-names: Galer
+    given-names: Peter D.
+  - family-names: Sinha
+    given-names: Saurabh R.
+  - family-names: Shinohara
+    given-names: Russell T.
+  - family-names: Davis
+    given-names: Kathryn A.
+  - family-names: Litt
+    given-names: Brian
+  - family-names: Conrad
+    given-names: Erin C.
+  year: 2026
+  journal: medRxiv
+  notes: Preprint.
+  doi: 10.64898/2026.02.15.26346325
+- type: data
+  title: Multi-Expert Seizure Annotation
+  authors:
+  - family-names: Ojemann
+    given-names: William K
+  - family-names: Zhou
+    given-names: Daniel
+  - family-names: Armstrong
+    given-names: Caren
+  - family-names: Sinha
+    given-names: Nishant
+  - family-names: Litt
+    given-names: Brian
+  - family-names: Conrad
+    given-names: Erin
+  year: 2026
+  publisher:
+    name: Pennsieve Discover
+  doi: 10.26275/dely-fzwx
+  license: CC-BY-4.0

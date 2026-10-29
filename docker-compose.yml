@@ -1,0 +1,13 @@
+services:
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: processor-seizure-consensus:dev
+    platform: linux/amd64
+    env_file:
+      - dev.env
+    mem_limit: 1g
+    volumes:
+      - ./data/fixture/linked:/data/input:ro
+      - ./data/output:/data/output

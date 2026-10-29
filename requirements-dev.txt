@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==9.2.0
+# tests only: checks the in-house AUC against scikit-learn's
+scikit-learn==1.9.1

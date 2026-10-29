@@ -1,0 +1,127 @@
+# yaml-language-server: $schema=https://schemas.pennsieve.io/app-manifest/v1.json
+schemaVersion: "1.0"
+application:
+  name: Seizure Onset Consensus
+  description: >-
+    The fusion step of the Seizure Onset Localisation (SEEG) workflow. Ranks the channels of
+    each seizure recording by every onset-localisation method it is given (seizure-dynasd's
+    channel recruitment, the Epileptogenicity Index of seizure-ei, neural fragility of
+    seizure-fragility), fuses the ranks (mean rank or Borda count) and marks the top channels
+    as the estimated onset zone. When the recording carries expert onset labels it scores
+    every method and the consensus against them (AUC, precision/recall/F1, onset-time error
+    with SzCORE event scoring via timescoring), per recording and summarised over recordings.
+  type: processor
+  tags:
+    - ieeg
+    - seeg
+    - electrophysiology
+    - epilepsy
+    - neuroscience
+    - seizure-onset
+    - statistics
+runtime:
+  # Tables only: ~0.3 s and ~120 MB peak for three 208-channel recordings with three
+  # methods (README "Runtime"); 24 recordings stay well under a minute.
+  cpu: 1024
+  memory: 2048
+  # standard (ECS) by default; a workflow can run this light step as a Lambda function
+  # instead (the image serves both, see processor/entry.py).
+  computeTypes:
+    - standard
+    - lambda
+  timeoutSeconds: 900
+parameters:
+  - name: FUSION
+    type: string
+    label: Rank fusion
+    description: >-
+      mean-rank (default): the consensus score is 1 minus the mean of the methods'
+      normalised ranks. borda: each method gives a channel n - rank points.
+    defaultValue: mean-rank
+    validValues: [mean-rank, borda]
+  - name: FRAGILITY_SCORE
+    type: string
+    label: Fragility score
+    description: >-
+      Which value of fragility.csv ranks the channels: post (fragility_post, the mean
+      fragility after onset; default) or difference (fragility_post - fragility_pre).
+    defaultValue: post
+    validValues: [post, difference]
+  - name: MISSING_CHANNELS
+    type: string
+    label: Channels a method did not score
+    description: >-
+      worst (default): they share the method's last places. ignore: that method is left out
+      of the channel's consensus (mean rank over the other methods; no Borda points).
+    defaultValue: worst
+    validValues: [worst, ignore]
+  - name: ZONE_MODE
+    type: string
+    label: Onset zone selection
+    description: >-
+      top-k (default): the ZONE_K best channels. threshold: every channel with a consensus
+      score >= ZONE_THRESHOLD. expert-size: as many channels as the expert marked as onset
+      (uses the labels; for scoring only, not for unlabelled data; falls back to top-k).
+    defaultValue: top-k
+    validValues: [top-k, threshold, expert-size]
+  - name: ZONE_K
+    type: integer
+    label: Onset zone size
+    description: Number of channels in the onset zone with ZONE_MODE=top-k.
+    defaultValue: 10
+    min: 1
+  - name: ZONE_THRESHOLD
+    type: number
+    label: Consensus score threshold
+    description: Minimum consensus score (0-1, 1 = ranked first by every method) with ZONE_MODE=threshold.
+    defaultValue: 0.9
+    min: 0
+    max: 1
+  - name: EVENT_TOLERANCE_START_S
+    type: number
+    label: Onset tolerance before (s)
+    description: >-
+      Event scoring of the detected seizure onset (SzCORE): a detection up to this many
+      seconds before the expert onset still counts.
+    defaultValue: 30
+    min: 0
+  - name: EVENT_TOLERANCE_END_S
+    type: number
+    label: Onset tolerance after the seizure (s)
+    description: >-
+      Event scoring (SzCORE): a detection up to this many seconds after the end of the
+      expert-marked seizure still counts.
+    defaultValue: 60
+    min: 0
+inputs:
+  - name: ieeg
+    description: >-
+      The BIDS-iEEG derivative of ieeg-prep (or a plain BIDS-iEEG dataset): recordings.csv,
+      <stem>_desc-preproc_channels.tsv (good channels and the expert `onset` labels) and
+      _events.tsv (`seizure` row). Signals are not read.
+    mediaTypes:
+      - text/csv
+      - text/tab-separated-values
+      - application/json
+    placement: subfolder
+    required: true
+  - name: methods
+    description: >-
+      Fan-in of the onset-localisation steps: seizure-dynasd (seizure_onsets.csv,
+      channel_onsets.csv), seizure-ei (ei.csv), seizure-fragility (fragility.csv). Found by
+      name anywhere under the port; any one of them is enough.
+    mediaTypes:
+      - text/csv
+      - application/json
+    placement: subfolder
+    required: true
+outputs:
+  - name: onset-zone
+    description: >-
+      onset_zone.csv (recording_id, channel, each method's value and rank, n_methods,
+      consensus_score, rank, in_onset_zone, expert_onset), scores.csv (recording_id, method,
+      metric, value: per recording and summarised over ALL recordings and by stim_induced /
+      lvfa when known) and provenance.json.
+    mediaTypes:
+      - text/csv
+      - application/json
