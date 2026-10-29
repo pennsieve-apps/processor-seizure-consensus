@@ -131,18 +131,45 @@ timings and per-recording status/notes.
 A recording that fails is logged and skipped; the step fails when every recording failed, or
 when no `channel_onsets.csv`, `ei.csv` or `fragility.csv` was found.
 
+## Results on the demo data
+
+All 24 SEEG clips of the Multi-Expert Seizure Annotation dataset (6 HUP patients, 4 seizures
+each) through the real upstream steps: ieeg-prep (bipolar, 72–204 channels), seizure-dynasd,
+seizure-ei and seizure-fragility (with dynasd's onsets, as linked in the workflow); default
+parameters (`mean-rank`, `FRAGILITY_SCORE=post`, `MISSING_CHANNELS=worst`, top 10 channels).
+Scored against the expert consensus onset channels (1–13 per clip). Median [IQR] (min–max)
+over the 24 clips:
+
+| Method | AUC | Precision (top 10) | Recall (top 10) | F1 |
+|---|---|---|---|---|
+| dynasd | 0.963 [0.788–0.988] (0.323–1.000) | 0.25 | 0.73 | 0.35 |
+| ei | 0.899 [0.762–0.941] (0.337–0.980) | 0.20 | 0.33 | 0.24 |
+| fragility | 0.981 [0.923–1.000] (0.384–1.000) | 0.30 | 0.83 | 0.45 |
+| **consensus** | **0.987 [0.913–0.996] (0.862–1.000)** | 0.30 | 0.89 | 0.41 |
+
+- The consensus does not beat the best single method on the median, but it removes the bad
+  cases: its worst clip has AUC 0.86, against 0.32–0.38 for each method alone.
+- Precision is low by construction: 10 channels are selected and the experts mark 1–13
+  (`ZONE_MODE=expert-size` gives the matched-size view).
+- Onset time (dynasd vs the expert onset): median absolute error 5.0 s (0.24–59.5 s); every
+  seizure was detected by SzCORE event scoring (event sensitivity 1.0).
+- The stimulation-induced / spontaneous and LVFA splits were **not** made: ieeg-prep's
+  `recordings.csv` has no `stim_induced` / `lvfa` columns yet (rows `split_unavailable`).
+- 24 seizures from 6 patients are 6 independent tests, not 24; the methods' top channels are
+  largely the same in every seizure of a patient.
+
+The outputs are in `workflow-epilepsy-ieeg/data/work/consensus/`.
+
 ## Runtime
 
 `computeTypes: [standard, lambda]`, 1 vCPU / 2 GiB, 15 min timeout. The step reads only small
 tables; time and memory grow linearly with recordings × channels.
 
-Measured in Docker (linux/amd64 image under emulation on an M-series Mac, `--memory 1g`) on a
-stand-in for ieeg-prep's output built from the demo data (3 clips of HUP224, 208 bipolar
-channels each, expert onset labels) with label-blind *random* method tables of real size
-(the upstream method steps had not produced output yet): **0.3 s** for the processing, 2.6 s
-wall time including container start; cgroup `memory.peak` **122 MB**. The image is 294 MB
-unpacked, ~69 MB compressed. 2 GiB (and the Lambda's 2048 MB) leaves ample room; 24 or
-several hundred recordings stay within seconds.
+Measured in Docker (linux/amd64 image under emulation on an M-series Mac, `--memory 1g`) on
+the 24 demo clips with the real dynasd, ei and fragility tables (72–204 channels per clip):
+**0.6 s** for the processing; cgroup `memory.peak` **100 MB**. The image is 294 MB unpacked,
+~69 MB compressed. 2 GiB (and the Lambda's 2048 MB) leaves ample room; several hundred
+recordings stay within seconds.
 
 ## Running it locally
 
