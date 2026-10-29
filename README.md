@@ -116,10 +116,10 @@ _max, _mean` over recordings; `event_sensitivity` (fraction of recordings whose 
 detected within tolerance) and `event_n`. A false-alarm rate is not reported: each clip holds
 one seizure and dynasd reports one onset, so it would be meaningless.
 
-**Stimulation / LVFA split: a gap in the contract.** conventions.md does not define where the
-seizure type comes from. This app reads two optional recordings.csv columns, `stim_induced`
-and `lvfa` (`true`/`false`), which ieeg-prep would fill from `labels.csv` recording-level rows
-(the demo's `annotations.tsv` has `stim` and `lvfa` per seizure). When a column is missing,
+**Stimulation / LVFA split.** The seizure type comes from two optional recordings.csv columns,
+`stim_induced` and `lvfa` (`true`/`false`), which ieeg-prep copies from `labels.csv`
+recording-level rows (conventions.md, "Labels on input"; the demo's labels script fills them
+from `annotations.tsv`'s `stim` and `lvfa`). When a column is missing,
 the split is not made, `scores.csv` gets a row `stim_induced=unavailable, all,
 split_unavailable, 1` (likewise for `lvfa`), the log says so and `provenance.json → splits`
 records it. The app never reads `annotations.tsv` itself.
@@ -153,8 +153,19 @@ over the 24 clips:
   (`ZONE_MODE=expert-size` gives the matched-size view).
 - Onset time (dynasd vs the expert onset): median absolute error 5.0 s (0.24–59.5 s); every
   seizure was detected by SzCORE event scoring (event sensitivity 1.0).
-- The stimulation-induced / spontaneous and LVFA splits were **not** made: ieeg-prep's
-  `recordings.csv` has no `stim_induced` / `lvfa` columns yet (rows `split_unavailable`).
+- Split by seizure type (median AUC [IQR]; consensus precision / recall / F1 in the top 10):
+
+  | Recordings | n | dynasd | ei | fragility | consensus | consensus P / R / F1 |
+  |---|---|---|---|---|---|---|
+  | stimulation-induced | 6 | 0.659 [0.524–0.892] | 0.846 [0.722–0.932] | 0.911 [0.852–0.982] | 0.906 [0.896–0.967] | 0.50 / 0.60 / 0.48 |
+  | spontaneous | 18 | 0.974 [0.930–0.996] | 0.901 [0.788–0.944] | 0.988 [0.962–1.000] | 0.993 [0.967–0.998] | 0.25 / 1.00 / 0.40 |
+  | LVFA onset | 9 | 0.937 [0.754–0.970] | 0.870 [0.785–0.940] | 0.960 [0.888–0.998] | 0.993 [0.913–0.995] | 0.70 / 0.88 / 0.67 |
+  | no LVFA | 15 | 0.970 [0.870–0.993] | 0.906 [0.699–0.942] | 0.994 [0.955–1.000] | 0.984 [0.931–0.996] | 0.20 / 1.00 / 0.33 |
+
+  Stimulation-induced seizures are dynasd's weak spot (AUC 0.66; onset error median 25.8 s
+  against 3.9 s for spontaneous ones: stimulation artefacts look like an onset); fragility
+  and the consensus hold up (0.91). LVFA onsets, the pattern EI was designed for, do not
+  favour EI here. 6 and 9 recordings from 6 patients: indicative only.
 - 24 seizures from 6 patients are 6 independent tests, not 24; the methods' top channels are
   largely the same in every seizure of a patient.
 
@@ -203,13 +214,15 @@ handler (parameters from the event, stale environment cleared, failure raised).
 
 ## Notes on the conventions
 
-- **Fan-in collision of `provenance.json`.** conventions.md asks every step to write
-  `provenance.json` into each output folder, and says fan-in entries land side by side and two
-  entries with the same name fail the run. Linking dynasd's `onsets`, ei's and fragility's
-  outputs into `methods` would then collide on `provenance.json`. This app finds the tables
-  anywhere under the port, so it works whether the platform lands each link as its own folder
-  or the method steps write into a subfolder; the contract needs one of those.
-- recordings.csv has no `stim_induced` / `lvfa` columns (see above).
+- **Fan-in.** Linked into `methods`, the three method outputs land side by side, and two
+  entries with the same name fail the run. The method apps therefore write under a folder
+  named after themselves (`dynasd/`, `ei/`, `fragility/`, each with its own
+  `provenance.json`; conventions.md). This app finds the tables by name anywhere under the
+  port. Checked on the demo by assembling `methods/` exactly as the compute node's
+  `handleMerge` does (symlinks of each output's root entries): no name collision, and
+  `scores.csv` / `onset_zone.csv` byte-identical to a run with each output mounted in its own
+  folder. With the earlier layout (files at each output's root) the same merge fails on
+  `provenance.json`.
 
 ## Licences
 
