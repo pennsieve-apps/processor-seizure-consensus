@@ -12,7 +12,8 @@ Recordings: P1 seizure 1 (labelled, spontaneous), P1 seizure 2 (labelled, stimul
 LVFA; ei.csv lacks two channels), P2 seizure 1 (no labels: `onset` column empty), and a channel
 marked bad in P2.
 
-Layouts: `linked` (INPUT_DIR/ieeg/..., INPUT_DIR/methods/<step>/...) and `flat` (everything
+Layouts: `linked` (INPUT_DIR/ieeg/..., INPUT_DIR/methods/<step>/... with each step's
+provenance.json, as the methods apps write them) and `flat` (everything
 side by side, nested folders). `flags=False` leaves out the proposed stim_induced/lvfa columns.
 
     python -m tests.make_fixture data/fixture [--no-flags]
@@ -129,6 +130,10 @@ def make_fixture(out: Path, layout: str = "both", flags: bool = True) -> dict[st
             write_ieeg(root / "ieeg", flags)
             for name, (header, rows) in tables.items():
                 write_csv(root / "methods" / STEP[name] / name, header, rows)
+            # as the platform merges the fan-in: each method's folder, provenance.json included
+            for step in sorted(set(STEP.values())):
+                (root / "methods" / step / "provenance.json").write_text(
+                    '{"app": "processor-seizure-%s"}\n' % step)
         else:
             write_ieeg(root / "prep", flags)
             for name, (header, rows) in tables.items():
