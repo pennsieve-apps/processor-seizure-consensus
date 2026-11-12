@@ -1,5 +1,6 @@
 cff-version: "1.2.0"
-message: If you use this app, please cite it and the works it builds on, listed under references.
+message: >-
+  If you use this app, please cite the work it implements (preferred-citation), this release, and Pennsieve (RRID:SCR_021677); the other works it builds on are listed under references.
 type: software
 title: Seizure Onset Consensus
 abstract: Fuses the channel rankings of seizure-onset localisation methods (DynaSD channel recruitment,
@@ -18,6 +19,43 @@ keywords:
 - seizure-onset
 - consensus
 - statistics
+# The work this app implements; the release report's "How to cite" puts it first.
+preferred-citation:
+  type: article
+  title: 'SzCORE: Seizure Community Open-Source Research Evaluation framework for the validation of electroencephalography-based
+    automated seizure detection algorithms'
+  authors:
+  - family-names: Dan
+    given-names: Jonathan
+  - family-names: Pale
+    given-names: Una
+  - family-names: Amirshahi
+    given-names: Alireza
+  - family-names: Cappelletti
+    given-names: William
+  - family-names: Ingolfsson
+    given-names: Thorir Mar
+  - family-names: Wang
+    given-names: Xiaying
+  - family-names: Cossettini
+    given-names: Andrea
+  - family-names: Bernini
+    given-names: Adriano
+  - family-names: Benini
+    given-names: Luca
+  - family-names: Beniczky
+    given-names: Sándor
+  - family-names: Atienza
+    given-names: David
+  - family-names: Ryvlin
+    given-names: Philippe
+  year: 2024
+  journal: Epilepsia
+  volume: 66
+  issue: S3
+  start: '14'
+  end: '24'
+  doi: 10.1111/epi.18113
 references:
 - type: article
   title: 'SzCORE: Seizure Community Open-Source Research Evaluation framework for the validation of electroencephalography-based
